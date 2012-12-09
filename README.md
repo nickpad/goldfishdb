@@ -5,19 +5,16 @@ Goldfish DB is a really simple database for in-memory Ruby objects. If you're
 working with lots of ephemeral data that doesn't need to be persisted, but
 that you need to be able to query in multiple ways, you might find it useful.
 
-Goldfish provides a simple way of defining multiple indexes over a set of
+It provides a simple way of defining multiple indexes over a set of
 data, taking care of the manual book-kepping that would otherwise be necessary
 to maintain the indexes.
 
-There are a few important reasons why this library might **not** be
-appropriate for your use case:
+There are a few important things to be aware of:
 
   * No persistance - all data lives in memory and will disappear with your Ruby process.
   * Only supports querying for equality, i.e. range lookups aren't
   possible.
   * Currently **not** threadsafe.
-  * There's no server component, so if multiple processes need to be
-  able to access the data, it may not be appropriate.
 
 Example
 -------
