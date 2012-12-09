@@ -1,6 +1,11 @@
 require "set"
 
 class Goldfish
+  def self.table(&block)
+    fail ArgumentError, "block required" unless block_given?
+    Table.new(&block)
+  end
+
   class SecondaryIndex
     def initialize(&block)
       @keys = {}
@@ -80,10 +85,24 @@ class Goldfish
 
     attr_reader :data, :indexes
 
-    def initialize(indexes, &block)
+    def initialize(&block)
       @data = {}
-      @indexes = indexes
+      @indexes = {}
       @block = block
+    end
+
+    def index(name, &block)
+      self.tap do
+        @indexes[name] = block
+      end
+    end
+
+    def fetch(*args)
+      @data.fetch(*args)
+    end
+
+    def [](key)
+      @data[key]
     end
 
     def insert(item)
@@ -92,10 +111,15 @@ class Goldfish
       @indexes.each { |_, idx| idx.add(item, pk) }
     end
 
-    def delete(item)
-      pk = @block.call(item)
-      @data.delete(pk)
-      @indexes.each { |_, idx| idx.remove(pk) }
+    def delete(key)
+      @data.delete(key).tap do
+        @indexes.each { |_, idx| idx.remove(key) }
+      end
+    end
+
+    def delete_item(item)
+      key = @block.call(item)
+      delete(key)
     end
 
     def filter(options)
